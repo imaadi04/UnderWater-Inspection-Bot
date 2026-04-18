@@ -1,580 +1,1170 @@
-<!doctype html>
-<html lang="en" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OceanVault Discovery - Deep Sea Resource Exploration</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <style>
-    body {
-      box-sizing: border-box;
-    }
-    * {
-      font-family: 'Poppins', sans-serif;
-    }
-    .deep-ocean-bg {
-      background: linear-gradient(180deg, #0a1428 0%, #1a0a3e 35%, #2d1b4e 70%, #1a2f4a 100%);
-      position: relative;
-    }
-    .aurora-glow {
-      background: radial-gradient(ellipse 800px 400px at 50% 0%, rgba(16, 185, 129, 0.15), transparent);
-    }
-    .mineral-card {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .mineral-card:hover {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.5);
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
-    }
-    .discovery-btn {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
-      transition: all 0.3s ease;
-    }
-    .discovery-btn:hover {
-      box-shadow: 0 0 50px rgba(16, 185, 129, 0.5);
-      transform: translateY(-2px);
-    }
-    .discovery-btn-secondary {
-      border: 2px solid #10b981;
-      transition: all 0.3s ease;
-    }
-    .discovery-btn-secondary:hover {
-      background: rgba(16, 185, 129, 0.1);
-    }
-    .pulse-dot {
-      animation: pulse-glow 2s infinite;
-    }
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
-      50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.8); }
-    }
-    .mineral-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 56px;
-      height: 56px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-    .stat-box {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.05));
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-    }
-    .stat-box:hover {
-      border-color: rgba(16, 185, 129, 0.5);
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
-    }
-    .discovery-timeline {
-      position: relative;
-      padding: 40px 0;
-    }
-    .timeline-item {
-      display: flex;
-      margin-bottom: 40px;
-      opacity: 0.8;
-      transition: opacity 0.3s ease;
-    }
-    .timeline-item:hover {
-      opacity: 1;
-    }
-    .timeline-dot {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #10b981;
-      border: 3px solid #0a1428;
-      margin-right: 30px;
-      margin-top: 5px;
-      flex-shrink: 0;
-    }
-    .float-animation {
-      animation: deep-float 8s ease-in-out infinite;
-    }
-    @keyframes deep-float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-25px); }
-    }
-    .shimmer {
-      position: relative;
-      overflow: hidden;
-    }
-    .shimmer::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.3), transparent);
-      animation: shimmer-move 3s infinite;
-    }
-    @keyframes shimmer-move {
-      0% { left: -100%; }
-      100% { left: 100%; }
-    }
-  </style>
-  <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
- </head>
- <body class="h-full">
-  <div id="app-wrapper" class="w-full h-full deep-ocean-bg text-white overflow-auto"><!-- Navigation -->
-   <nav class="relative z-20 px-6 py-5 flex items-center justify-between max-w-7xl mx-auto">
-    <div class="flex items-center gap-3">
-     <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-      <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 3v18M3 12h18M7 7h10v10H7z" /> <circle cx="12" cy="12" r="3" fill="white" />
-      </svg>
-     </div><span class="text-2xl font-bold tracking-tight">UnderWater  Inpection  Bot</span>
-    </div>
-    <div class="hidden md:flex items-center gap-10 text-sm font-medium text-emerald-100"><a href="#discovery" class="hover:text-emerald-300 transition-colors">Discovery</a> <a href="#capabilities" class="hover:text-emerald-300 transition-colors">Technology</a> <a href="#minerals" class="hover:text-emerald-300 transition-colors">Resources</a> <a href="#partners" class="hover:text-emerald-300 transition-colors">Partners</a>
-    </div><button class="px-6 py-2.5 rounded-full discovery-btn font-semibold text-sm"> Portal Access </button>
-   </nav><!-- Hero Section -->
-   <section class="relative z-10 px-6 pt-24 pb-20 max-w-7xl mx-auto">
-    <div class="aurora-glow absolute top-0 left-0 w-full h-96 pointer-events-none"></div>
-    <div class="grid lg:grid-cols-2 gap-12 items-center relative z-10">
-     <div>
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-6"><span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span> ACTIVE EXPEDITION
-      </div>
-      <h1 id="hero-title" class="text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-white to-emerald-200">Unlock Earth's Hidden Treasures</h1>
-      <p id="hero-subtitle" class="text-lg text-gray-300 leading-relaxed mb-10 max-w-lg">Explore the deepest oceans using advanced autonomous discovery systems. Identify rare minerals, undiscovered resources, and scientific phenomena beyond human reach. The future of resource exploration starts here.</p>
-      <div class="flex flex-col sm:flex-row gap-4"><button id="cta-button" class="discovery-btn px-8 py-4 rounded-lg font-semibold text-lg text-white"> Begin Exploration </button> <button class="discovery-btn-secondary px-8 py-4 rounded-lg font-semibold text-lg text-emerald-300"> View Documentation </button>
-      </div>
-      <div class="mt-12 pt-8 border-t border-emerald-500/20 grid grid-cols-3 gap-6">
-       <div>
-        <div class="text-2xl font-bold text-emerald-400">
-         11,000m
-        </div>
-        <div class="text-sm text-gray-400">
-         Max Depth Capability
-        </div>
-       </div>
-       <div>
-        <div class="text-2xl font-bold text-emerald-400">
-         50+
-        </div>
-        <div class="text-sm text-gray-400">
-         Active Expeditions
-        </div>
-       </div>
-       <div>
-        <div class="text-2xl font-bold text-emerald-400">
-         99.9%
-        </div>
-        <div class="text-sm text-gray-400">
-         Data Accuracy
-        </div>
-       </div>
-      </div>
-     </div>
-     <div class="relative flex justify-center lg:justify-end">
-      <div class="float-animation relative w-96 h-96"><!-- Deep Sea Visualization -->
-       <svg viewbox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg"><!-- Ocean layers --> <defs>
-         <radialgradient id="oceanDepth" cx="50%" cy="30%">
-          <stop offset="0%" stop-color="#10b981" stop-opacity="0.2" />
-          <stop offset="100%" stop-color="#059669" stop-opacity="0.05" />
-         </radialgradient>
-        </defs> <!-- Main ROV Bot --> <g id="mainBot">
-         <ellipse cx="200" cy="200" rx="80" ry="50" fill="url(#oceanDepth)" stroke="#10b981" stroke-width="2" /> <!-- Central Camera -->
-         <circle cx="200" cy="195" r="25" fill="#0a1428" stroke="#10b981" stroke-width="2" />
-         <circle cx="200" cy="195" r="15" fill="#10b981" opacity="0.9" />
-         <circle cx="200" cy="195" r="8" fill="white" /> <!-- Sensor Arms -->
-         <path d="M140 200 L90 230 L110 240" stroke="#10b981" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-         <path d="M260 200 L310 230 L290 240" stroke="#10b981" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /> <!-- LED Lights -->
-         <circle cx="150" cy="180" r="6" fill="#fbbf24" />
-         <circle cx="250" cy="180" r="6" fill="#fbbf24" /> <!-- Propeller -->
-         <rect x="175" y="250" width="50" height="12" rx="6" fill="#059669" stroke="#10b981" stroke-width="1.5" />
-        </g> <!-- Mineral Samples Around --> <g opacity="0.7"><!-- Crystal 1 -->
-         <polygon points="100,300 110,330 90,340 80,310" fill="#10b981" stroke="#10b981" stroke-width="1.5" /> <!-- Crystal 2 -->
-         <polygon points="300,280 315,310 295,325 280,295" fill="#10b981" stroke="#10b981" stroke-width="1.5" /> <!-- Crystal 3 -->
-         <polygon points="200,320 215,350 185,360 170,330" fill="#10b981" stroke="#10b981" stroke-width="1.5" />
-        </g> <!-- Sonar Waves --> <circle cx="200" cy="200" r="110" stroke="#10b981" stroke-width="1" opacity="0.3" fill="none" /> <circle cx="200" cy="200" r="140" stroke="#10b981" stroke-width="1" opacity="0.15" fill="none" /> <circle cx="200" cy="200" r="170" stroke="#10b981" stroke-width="1" opacity="0.08" fill="none" />
-       </svg>
-      </div>
-     </div>
-    </div>
-   </section><!-- Discovery Mission Section -->
-   <section id="discovery" class="relative z-10 px-6 py-20 max-w-7xl mx-auto">
-    <div class="text-center mb-16">
-     <h2 id="discovery-title" class="text-4xl md:text-5xl font-bold mb-6">Our Discovery Mission</h2>
-     <p class="text-gray-300 max-w-2xl mx-auto text-lg">Leverage cutting-edge autonomous systems to identify and map previously unknown mineral deposits, rare earth elements, and critical resources in Earth's deepest oceans.</p>
-    </div>
-    <div class="discovery-timeline">
-     <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div>
-       <h3 class="text-xl font-bold mb-2 text-emerald-300">Autonomous Exploration</h3>
-       <p class="text-gray-400">AI-powered ROVs navigate extreme depths and map previously unexplored regions with precision.</p>
-      </div>
-     </div>
-     <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div>
-       <h3 class="text-xl font-bold mb-2 text-emerald-300">Advanced Detection</h3>
-       <p class="text-gray-400">Multi-spectrum sensors identify mineral compositions and rare elements impossible for human divers.</p>
-      </div>
-     </div>
-     <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div>
-       <h3 class="text-xl font-bold mb-2 text-emerald-300">Real-Time Analysis</h3>
-       <p class="text-gray-400">Instant mineral classification and resource assessment powered by advanced AI algorithms.</p>
-      </div>
-     </div>
-     <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div>
-       <h3 class="text-xl font-bold mb-2 text-emerald-300">Strategic Mapping</h3>
-       <p class="text-gray-400">Create comprehensive 3D maps of resource deposits for government and corporate decision-making.</p>
-      </div>
-     </div>
-    </div>
-   </section><!-- Mineral Discovery Showcase -->
-   <section id="minerals" class="relative z-10 px-6 py-20 max-w-7xl mx-auto">
-    <div class="text-center mb-16">
-     <h2 id="minerals-title" class="text-4xl md:text-5xl font-bold mb-6">Discovering Tomorrow's Resources</h2>
-     <p class="text-gray-300 max-w-2xl mx-auto text-lg">Recent expeditions have identified critical minerals previously unknown to science. These discoveries could reshape global industry.</p>
-    </div>
-    <div class="grid md:grid-cols-3 gap-6"><!-- Mineral Card 1 -->
-     <div class="mineral-card rounded-2xl p-8">
-      <div class="mineral-icon mb-6">
-       <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polygon points="12 2 20 7 20 17 12 22 4 17 4 7 12 2" />
-       </svg>
-      </div>
-      <h3 class="text-xl font-bold mb-3 text-emerald-300">Rare Earth Elements</h3>
-      <p class="text-gray-400 mb-4">Critical materials for advanced technology and clean energy applications discovered at depths exceeding 8,000 meters.</p>
-      <div class="text-sm text-emerald-400 font-semibold">
-       Depth: 8,400m | Purity: 94%
-      </div>
-     </div><!-- Mineral Card 2 -->
-     <div class="mineral-card rounded-2xl p-8">
-      <div class="mineral-icon mb-6">
-       <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" /> <path d="M8 8h8M8 16h8M8 12h8" />
-       </svg>
-      </div>
-      <h3 class="text-xl font-bold mb-3 text-emerald-300">Polymetallic Nodules</h3>
-      <p class="text-gray-400 mb-4">Dense accumulations of manganese, nickel, and cobalt forming natural clusters on abyssal plains.</p>
-      <div class="text-sm text-emerald-400 font-semibold">
-       Depth: 6,200m | Coverage: Extensive
-      </div>
-     </div><!-- Mineral Card 3 -->
-     <div class="mineral-card rounded-2xl p-8">
-      <div class="mineral-icon mb-6">
-       <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2L15.09 8.26H22L17.45 12.04L19.54 18.26L12 14.48L4.46 18.26L6.55 12.04L2 8.26H8.91L12 2Z" />
-       </svg>
-      </div>
-      <h3 class="text-xl font-bold mb-3 text-emerald-300">Lithium Deposits</h3>
-      <p class="text-gray-400 mb-4">High-concentration lithium formations essential for battery technology and renewable energy storage solutions.</p>
-      <div class="text-sm text-emerald-400 font-semibold">
-       Depth: 5,800m | Reserves: Significant
-      </div>
-     </div>
-    </div>
-   </section><!-- Capabilities Section -->
-   <section id="capabilities" class="relative z-10 px-6 py-20 max-w-7xl mx-auto">
-    <div class="text-center mb-16">
-     <h2 id="capabilities-title" class="text-4xl md:text-5xl font-bold mb-6">Advanced Detection Capabilities</h2>
-     <p class="text-gray-300 max-w-2xl mx-auto text-lg">State-of-the-art sensors and artificial intelligence enable discoveries impossible for traditional methods.</p>
-    </div>
-    <div class="grid md:grid-cols-2 gap-8"><!-- Capability 1 -->
-     <div class="mineral-card rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4 text-emerald-300">Multi-Spectrum Analysis</h3>
-      <p class="text-gray-400 mb-6">Advanced sensors detect mineral composition across UV, visible, and infrared spectrums, identifying rare elements with 99.9% accuracy.</p>
-      <ul class="space-y-3 text-gray-300">
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Hyperspectral imaging</li>
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Mineral classification AI</li>
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Real-time composition analysis</li>
-      </ul>
-     </div><!-- Capability 2 -->
-     <div class="mineral-card rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4 text-emerald-300">3D Mapping &amp; Modeling</h3>
-      <p class="text-gray-400 mb-6">Create precise three-dimensional maps of mineral deposits, geological formations, and resource distribution patterns.</p>
-      <ul class="space-y-3 text-gray-300">
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Sonar &amp; lidar fusion</li>
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Photogrammetry processing</li>
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Interactive visualization</li>
-      </ul>
-     </div><!-- Capability 3 -->
-     <div class="mineral-card rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4 text-emerald-300">Extreme Depth Operations</h3>
-      <p class="text-gray-400 mb-6">Operate reliably at 11,000+ meters, accessing hydrothermal vents and abyssal trenches where most discoveries occur.</p>
-      <ul class="space-y-3 text-gray-300">
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Pressure-tested to 1100 bar</li>
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>24-hour continuous operation</li>
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Enhanced navigation systems</li>
-      </ul>
-     </div><!-- Capability 4 -->
-     <div class="mineral-card rounded-2xl p-8">
-      <h3 class="text-2xl font-bold mb-4 text-emerald-300">AI-Powered Discovery</h3>
-      <p class="text-gray-400 mb-6">Machine learning algorithms identify patterns humans cannot, discovering new mineral types and deposit formations automatically.</p>
-      <ul class="space-y-3 text-gray-300">
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Anomaly detection</li>
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Predictive modeling</li>
-       <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Continuous learning</li>
-      </ul>
-     </div>
-    </div>
-   </section><!-- Impact Statistics -->
-   <section class="relative z-10 px-6 py-20 max-w-7xl mx-auto">
-    <div class="grid md:grid-cols-4 gap-6 mb-16">
-     <div class="stat-box">
-      <div class="text-4xl font-bold text-emerald-400 mb-2">
-       500K+
-      </div>
-      <div class="text-gray-300 font-semibold">
-       sq km Explored
-      </div>
-     </div>
-     <div class="stat-box">
-      <div class="text-4xl font-bold text-emerald-400 mb-2">
-       47
-      </div>
-      <div class="text-gray-300 font-semibold">
-       New Species Found
-      </div>
-     </div>
-     <div class="stat-box">
-      <div class="text-4xl font-bold text-emerald-400 mb-2">
-       150+
-      </div>
-      <div class="text-gray-300 font-semibold">
-       Mineral Types Identified
-      </div>
-     </div>
-     <div class="stat-box">
-      <div class="text-4xl font-bold text-emerald-400 mb-2">
-       12
-      </div>
-      <div class="text-gray-300 font-semibold">
-       Nations Partnering
-      </div>
-     </div>
-    </div>
-   </section><!-- Government & Corporate Partners -->
-   <section id="partners" class="relative z-10 px-6 py-20 max-w-7xl mx-auto">
-    <div class="text-center mb-16">
-     <h2 id="partnership-title" class="text-4xl md:text-5xl font-bold mb-6">Trusted by Global Leaders</h2>
-     <p class="text-gray-300 max-w-2xl mx-auto text-lg">Government agencies and major corporations partner with us for resource intelligence and strategic exploration data.</p>
-    </div>
-    <div class="grid md:grid-cols-3 gap-8">
-     <div class="mineral-card rounded-2xl p-8 text-center">
-      <div class="w-16 h-16 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6">
-       <svg width="32" height="32" viewbox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5.12 4.23.98 6.5L12 17.77l-5.86 3.23.98-6.5L2 9.27l6.91-1.01L12 2z" />
-       </svg>
-      </div>
-      <h3 class="text-xl font-bold mb-3">National Governments</h3>
-      <p class="text-gray-400">Providing strategic resource intelligence for maritime sovereignty and economic development initiatives.</p>
-     </div>
-     <div class="mineral-card rounded-2xl p-8 text-center">
-      <div class="w-16 h-16 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6">
-       <svg width="32" height="32" viewbox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /> <line x1="9" y1="9" x2="15" y2="9" /> <line x1="9" y1="15" x2="15" y2="15" />
-       </svg>
-      </div>
-      <h3 class="text-xl font-bold mb-3">Energy Corporations</h3>
-      <p class="text-gray-400">Identifying critical materials essential for renewable energy and advanced technology manufacturing.</p>
-     </div>
-     <div class="mineral-card rounded-2xl p-8 text-center">
-      <div class="w-16 h-16 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6">
-       <svg width="32" height="32" viewbox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" />
-       </svg>
-      </div>
-      <h3 class="text-xl font-bold mb-3">Research Institutions</h3>
-      <p class="text-gray-400">Supporting scientific discovery and understanding of deep-ocean geology and mineral formation.</p>
-     </div>
-    </div>
-   </section><!-- CTA Section -->
-   <section class="relative z-10 px-6 py-20 max-w-7xl mx-auto">
-    <div class="rounded-3xl bg-gradient-to-r from-emerald-600/30 to-emerald-900/30 border border-emerald-500/40 p-12 text-center">
-     <h2 class="text-4xl md:text-5xl font-bold mb-6">Ready to Explore the Depths?</h2>
-     <p class="text-gray-300 mb-10 max-w-xl mx-auto text-lg">Access our portal to review exploration data, request custom surveys, and collaborate on groundbreaking discoveries.</p>
-     <div class="flex flex-col sm:flex-row gap-4 justify-center"><button class="discovery-btn px-10 py-4 rounded-lg font-semibold text-lg text-white"> Access Discovery Portal </button> <button class="discovery-btn-secondary px-10 py-4 rounded-lg font-semibold text-lg text-emerald-300"> Schedule Consultation </button>
-     </div>
-    </div>
-   </section><!-- Footer -->
-   <footer class="relative z-10 px-6 py-12 border-t border-emerald-500/20">
-    <div class="max-w-7xl mx-auto">
-     <div class="grid md:grid-cols-4 gap-10 mb-10">
-      <div>
-       <div class="flex items-center gap-2 mb-4">
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-         <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 3v18M3 12h18M7 7h10v10H7z" />
-         </svg>
-        </div><span class="text-xl font-bold">Under-Water Bot Inspection</span>
-       </div>
-       <p class="text-gray-400 text-sm">Advanced deep-sea resource discovery for governments and corporations.</p>
-      </div>
-      <div>
-       <h4 class="font-bold mb-4 text-emerald-300">Technology</h4>
-       <ul class="space-y-2 text-sm text-gray-400">
-        <li><a href="#" class="hover:text-emerald-300 transition">ROV Systems</a></li>
-        <li><a href="#" class="hover:text-emerald-300 transition">AI Detection</a></li>
-        <li><a href="#" class="hover:text-emerald-300 transition">Data Analytics</a></li>
-       </ul>
-      </div>
-      <div>
-       <h4 class="font-bold mb-4 text-emerald-300">Company</h4>
-       <ul class="space-y-2 text-sm text-gray-400">
-        <li><a href="#" class="hover:text-emerald-300 transition">About Us</a></li>
-        <li><a href="#" class="hover:text-emerald-300 transition">Expeditions</a></li>
-        <li><a href="#" class="hover:text-emerald-300 transition">Partnerships</a></li>
-       </ul>
-      </div>
-      <div>
-       <h4 class="font-bold mb-4 text-emerald-300">Contact</h4>
-       <ul class="space-y-2 text-sm text-gray-400">
-        <li>📧 discoveries@oceanvault.gov</li>
-        <li>📞 +1 (555) 847-2690</li>
-        <li>🌐 Under-WaterBotInspection.research.org</li>
-       </ul>
-      </div>
-     </div>
-     <div class="text-center text-sm text-emerald-600 pt-8 border-t border-emerald-500/20">
-      © 2026 Under-Water Bot Inspection Discovery Initiative. Classified Partnership Agreement.
-     </div>
-    </div>
-   </footer>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AUV-009-X — Underwater Inspection Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ocean:   #080f1e;
+    --panel:   #0b1a30;
+    --panel2:  #0d2040;
+    --accent:  #00c8f0;
+    --accent2: #00f5a0;
+    --warn:    #ffb300;
+    --danger:  #ff3d3d;
+    --muted:   #3a5a85;
+    --border:  #163050;
+    --text:    #b8d8f8;
+    --text2:   #5a80ab;
+    --mono:    'Share Tech Mono', monospace;
+    --body:    'Exo 2', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ocean);
+    color: var(--text);
+    font-family: var(--body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Grid background ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,240,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,240,.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── TOP NAV ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(8,15,30,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 56px;
+  }
+  .logo {
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+  .logo span { color: var(--text2); }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent2);
+    animation: pulse 2s ease-in-out infinite;
+    display: inline-block;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.2} }
+  .clock { color: var(--accent); }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    position: relative;
+    z-index: 1;
+    padding: 20px 24px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ── GLOBAL ALERT BANNER ── */
+  .global-alert {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,61,61,.12);
+    border: 1px solid rgba(255,61,61,.4);
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 18px;
+    animation: alertPulse 1.4s ease-in-out infinite;
+  }
+  .global-alert.show { display: flex; }
+  @keyframes alertPulse { 0%,100%{border-color:rgba(255,61,61,.4)} 50%{border-color:rgba(255,61,61,.9)} }
+  .alert-icon { color: var(--danger); font-size: 18px; animation: blink 1s step-start infinite; }
+  @keyframes blink { 50%{opacity:0} }
+  .alert-msg { font-family: var(--mono); font-size: 12px; color: #ff9090; flex: 1; }
+  .alert-tag {
+    font-family: var(--mono); font-size: 10px;
+    background: var(--danger); color: #fff;
+    padding: 3px 10px; border-radius: 4px;
+  }
+
+  /* ── METRICS ROW ── */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .metric {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .metric::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: linear-gradient(90deg,transparent,var(--accent),transparent);
+    opacity: .5;
+  }
+  .metric-label { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text2); margin-bottom: 6px; }
+  .metric-val { font-family: var(--mono); font-size: 28px; line-height: 1; }
+  .metric-sub { font-size: 10px; color: var(--text2); margin-top: 4px; font-family: var(--mono); }
+
+  /* ── PANEL BASE ── */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: linear-gradient(90deg,transparent,var(--accent),transparent);
+    opacity: .4;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+  .panel-body { padding: 16px; }
+
+  /* ── BADGES ── */
+  .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .badge-ok   { background: rgba(0,245,160,.12); color: var(--accent2); border: 1px solid rgba(0,245,160,.3); }
+  .badge-warn { background: rgba(255,179,0,.12);  color: var(--warn);    border: 1px solid rgba(255,179,0,.3); }
+  .badge-danger { background: rgba(255,61,61,.14); color: var(--danger); border: 1px solid rgba(255,61,61,.3); }
+  .badge-info { background: rgba(0,200,240,.12);  color: var(--accent);  border: 1px solid rgba(0,200,240,.3); }
+  .badge-purple { background: rgba(130,110,255,.12); color: #a090ff; border: 1px solid rgba(130,110,255,.3); }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 14px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-bottom: 14px; }
+  .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; margin-bottom: 14px; }
+  @media(max-width:900px){
+    .grid-3,.grid-2,.grid-2-1,.grid-1-2 { grid-template-columns: 1fr; }
+  }
+
+  /* ══════════════════════════════════
+     DEPTH PANEL
+  ══════════════════════════════════ */
+  .depth-wrap { display: flex; align-items: flex-end; gap: 14px; }
+  .depth-ticks {
+    display: flex; flex-direction: column; justify-content: space-between;
+    height: 180px; font-size: 9px; font-family: var(--mono); color: var(--text2); text-align: right;
+  }
+  .depth-bar {
+    width: 28px; height: 180px;
+    background: rgba(0,0,0,.4);
+    border: 1px solid var(--border);
+    border-radius: 6px; overflow: hidden; position: relative; flex-shrink: 0;
+  }
+  .depth-fill {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,180,255,.25);
+    border-radius: 0 0 5px 5px;
+    transition: height 1.2s ease;
+  }
+  .depth-fill::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--accent);
+  }
+  .depth-info { flex: 1; }
+  .depth-val { font-size: 44px; font-family: var(--mono); color: var(--accent); line-height: 1; }
+  .depth-unit { font-size: 11px; color: var(--text2); font-family: var(--mono); }
+
+  /* ══════════════════════════════════
+     BATTERY PANEL
+  ══════════════════════════════════ */
+  .batt-big { font-size: 42px; font-family: var(--mono); color: var(--accent2); line-height: 1; }
+  .batt-bar-wrap {
+    height: 28px; background: rgba(0,0,0,.4);
+    border: 1px solid var(--border); border-radius: 6px;
+    position: relative; overflow: hidden; margin: 10px 0 6px;
+  }
+  .batt-bar-fill {
+    position: absolute; top: 0; left: 0; bottom: 0;
+    border-radius: 5px; transition: width 1s ease;
+  }
+  .batt-pct-label {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+  }
+  .batt-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px;
+  }
+  .batt-stat {
+    background: rgba(0,0,0,.3); border-radius: 6px; padding: 8px;
+    text-align: center;
+  }
+  .batt-stat-label { font-size: 9px; color: var(--text2); font-family: var(--mono); margin-bottom: 3px; }
+  .batt-stat-val   { font-size: 16px; font-family: var(--mono); color: var(--accent); }
+
+  /* ══════════════════════════════════
+     TEMPERATURE PANEL
+  ══════════════════════════════════ */
+  .temp-big { font-size: 42px; font-family: var(--mono); color: #5bc8ff; line-height: 1; text-align: center; }
+  .temp-sub { font-size: 12px; color: var(--text2); font-family: var(--mono); text-align: center; margin-bottom: 14px; }
+  .temp-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .temp-stat { background: rgba(0,0,0,.3); border-radius: 6px; padding: 8px; text-align: center; }
+  .temp-stat-label { font-size: 9px; color: var(--text2); font-family: var(--mono); margin-bottom: 3px; }
+  .temp-stat-val   { font-size: 16px; font-family: var(--mono); }
+
+  /* ══════════════════════════════════
+     MOTOR / THRUSTER SHARED
+  ══════════════════════════════════ */
+  .motor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .motor-card {
+    background: rgba(0,0,0,.3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px; text-align: center;
+  }
+  .motor-name { font-size: 9px; letter-spacing: 1px; color: var(--text2); font-family: var(--mono); margin-bottom: 6px; text-transform: uppercase; }
+  .motor-ring { position: relative; width: 58px; height: 58px; margin: 0 auto 6px; }
+  .motor-ring svg { transform: rotate(-90deg); }
+  .motor-ring-val {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    font-size: 12px; font-family: var(--mono);
+  }
+  .motor-rpm { font-size: 10px; color: var(--text2); font-family: var(--mono); }
+
+  /* ══════════════════════════════════
+     METAL DETECTOR
+  ══════════════════════════════════ */
+  .metal-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 160px; }
+  .sonar-ring-container { position: relative; width: 100px; height: 100px; }
+  .sonar-ring-container div {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    border-radius: 50%; border: 1px solid var(--border);
+  }
+  .sonar-center {
+    width: 14px !important; height: 14px !important;
+    background: var(--accent) !important; border: none !important;
+    border-radius: 50% !important;
+  }
+  .ping {
+    position: absolute; border-radius: 50%;
+    border: 2px solid var(--accent) !important;
+    animation: ping 2s ease-out infinite;
+  }
+  .ping2 { animation-delay: .8s; }
+  @keyframes ping {
+    0%  { width:0;height:0;opacity:1;top:50%;left:50%; }
+    100%{ width:100px;height:100px;opacity:0;top:50%;left:50%;transform:translate(-50%,-50%); }
+  }
+  .metal-status { font-size: 12px; font-family: var(--mono); text-align: center; }
+  .metal-dist   { font-size: 10px; color: var(--text2); font-family: var(--mono); text-align: center; }
+
+  /* ══════════════════════════════════
+     SENSOR HEALTH
+  ══════════════════════════════════ */
+  .sensor-list { display: flex; flex-direction: column; gap: 8px; }
+  .sensor-row { display: flex; align-items: center; gap: 10px; font-size: 12px; font-family: var(--mono); }
+  .sdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .sname { flex: 1; color: var(--text); }
+  .sbar-wrap { width: 90px; height: 4px; background: rgba(0,0,0,.4); border-radius: 2px; overflow: hidden; }
+  .sbar-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+  .sval { width: 36px; text-align: right; color: var(--text2); }
+
+  /* ══════════════════════════════════
+     THRUSTER DETAIL
+  ══════════════════════════════════ */
+  .thruster-grid-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .th-card {
+    background: rgba(0,0,0,.3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px;
+  }
+  .th-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .th-name { font-size: 11px; font-family: var(--mono); color: var(--text); }
+  .th-bar-wrap { height: 5px; background: rgba(0,0,0,.4); border-radius: 3px; overflow: hidden; margin: 6px 0 4px; }
+  .th-bar-fill { height: 100%; border-radius: 3px; transition: width .8s ease; }
+  .th-stats { display: flex; gap: 10px; flex-wrap: wrap; font-size: 10px; font-family: var(--mono); color: var(--text2); }
+  .th-sv { font-weight: 600; }
+
+  /* ══════════════════════════════════
+     BIO SCANNER
+  ══════════════════════════════════ */
+  .bio-alert-banner {
+    display: none;
+    background: rgba(255,61,61,.1);
+    border-left: 3px solid var(--danger);
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 12px;
+  }
+  .bio-alert-banner.show { display: flex; gap: 12px; align-items: flex-start; }
+  .bio-alert-title { font-size: 13px; font-family: var(--mono); color: var(--danger); margin-bottom: 4px; }
+  .bio-alert-desc  { font-size: 11px; color: var(--text2); line-height: 1.6; }
+  .bio-alert-meta  { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+
+  .scan-area { display: flex; gap: 16px; align-items: flex-start; }
+  .scan-visual { flex-shrink: 0; width: 110px; height: 110px; position: relative; }
+  .scan-ring-bio {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    border-radius: 50%; border: 1px solid var(--border);
+  }
+  .scan-sweep {
+    position: absolute; top: 50%; left: 50%; width: 50%; height: 1px;
+    background: var(--accent2); transform-origin: left center;
+    animation: sweep 3s linear infinite;
+  }
+  @keyframes sweep { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .scan-center-dot {
+    position: absolute; top: 50%; left: 50%; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--accent2);
+    transform: translate(-50%,-50%);
+  }
+  .scan-blip {
+    position: absolute; width: 7px; height: 7px;
+    border-radius: 50%; transform: translate(-50%,-50%);
+    animation: blinkB .8s step-start infinite;
+  }
+  @keyframes blinkB { 50%{opacity:0} }
+
+  .scan-stat-list { flex: 1; }
+  .scan-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 0; border-bottom: 1px solid var(--border);
+    font-size: 11px; font-family: var(--mono);
+  }
+  .scan-row:last-child { border-bottom: none; }
+  .scan-rlabel { color: var(--text2); }
+  .scan-rval { font-weight: 600; color: var(--text); }
+
+  .sightings-title { font-size: 9px; letter-spacing: 2px; color: var(--text2); font-family: var(--mono); text-transform: uppercase; margin: 14px 0 6px; }
+  .sightings-list { display: flex; flex-direction: column; gap: 5px; }
+  .sighting {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; background: rgba(0,0,0,.3);
+    border: 1px solid var(--border); border-radius: 7px; font-size: 11px; font-family: var(--mono);
+  }
+  .sighting.unknown { border-color: rgba(255,61,61,.4); background: rgba(255,61,61,.06); }
+  .sighting-icon { font-size: 14px; width: 22px; text-align: center; }
+  .sighting-name { flex: 1; }
+  .sighting-time { color: var(--text2); }
+
+  /* ══════════════════════════════════
+     DAMAGE LOG
+  ══════════════════════════════════ */
+  .damage-list { display: flex; flex-direction: column; gap: 5px; max-height: 200px; overflow-y: auto; }
+  .damage-list::-webkit-scrollbar { width: 4px; }
+  .damage-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .dmg-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-left: 3px solid;
+    font-size: 11px; font-family: var(--mono);
+  }
+  .dmg-icon { width: 16px; text-align: center; font-size: 12px; flex-shrink: 0; }
+  .dmg-text { flex: 1; line-height: 1.4; }
+  .dmg-time { color: var(--text2); font-size: 10px; flex-shrink: 0; }
+
+  /* ══════════════════════════════════
+     BUTTONS
+  ══════════════════════════════════ */
+  .btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background .2s, border-color .2s;
+  }
+  .btn:hover { background: rgba(0,200,240,.08); border-color: var(--accent); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .btn-danger { border-color: rgba(255,61,61,.4); color: var(--danger); }
+  .btn-danger:hover { background: rgba(255,61,61,.08); border-color: var(--danger); }
+
+  /* ══════════════════════════════════
+     STATUS BAR (footer)
+  ══════════════════════════════════ */
+  .status-bar {
+    display: flex; align-items: center; gap: 20px;
+    padding: 10px 16px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; margin-top: 14px;
+    font-family: var(--mono); font-size: 10px; color: var(--text2);
+    flex-wrap: wrap;
+  }
+  .sbar-item { display: flex; align-items: center; gap: 6px; }
+
+  /* ══════════════════════════════════
+     BOT DIAGRAM (Thruster panel)
+  ══════════════════════════════════ */
+  .bot-diag { display: flex; justify-content: center; margin-bottom: 14px; }
+
+  /* ══════════════════════════════════
+     ANIMATIONS / MISC
+  ══════════════════════════════════ */
+  @keyframes scanLine { from{width:20%} to{width:90%} }
+  .scan-line-anim { animation: scanLine 2s ease-in-out infinite alternate; }
+
+  .section-divider {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 3px; color: var(--text2);
+    text-transform: uppercase;
+    margin: 20px 0 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">AUV<span>-009-X</span> &nbsp;|&nbsp; UNDERWATER INSPECTION BOT</div>
+  <div class="nav-right">
+    <span class="live-dot"></span>
+    <span style="color:var(--accent2)">LIVE</span>
+    <span style="color:var(--text2)">MISSION: HULL SCAN</span>
+    <span class="clock" id="clock">--:--:--</span>
   </div>
-  <script>
-    const defaultConfig = {
-      hero_title: 'Unlock Earth\'s Hidden Treasures',
-      hero_subtitle: 'Explore the deepest oceans using advanced autonomous discovery systems. Identify rare minerals, undiscovered resources, and scientific phenomena beyond human reach. The future of resource exploration starts here.',
-      discovery_title: 'Our Discovery Mission',
-      capabilities_title: 'Advanced Detection Capabilities',
-      minerals_title: 'Discovering Tomorrow\'s Resources',
-      partnership_title: 'Trusted by Global Leaders',
-      cta_button_text: 'Begin Exploration',
-      background_color: '#0a1428',
-      surface_color: 'rgba(16, 185, 129, 0.1)',
-      text_color: '#ffffff',
-      primary_action_color: '#10b981',
-      secondary_action_color: '#059669',
-      font_family: 'Poppins',
-      font_size: 16
-    };
+</header>
 
-    async function onConfigChange(config) {
-      const heroTitleEl = document.getElementById('hero-title');
-      const heroSubtitleEl = document.getElementById('hero-subtitle');
-      const discoveryTitleEl = document.getElementById('discovery-title');
-      const capabilitiesTitleEl = document.getElementById('capabilities-title');
-      const mineralsTitleEl = document.getElementById('minerals-title');
-      const partnershipTitleEl = document.getElementById('partnership-title');
-      const ctaButtonEl = document.getElementById('cta-button');
-      const appWrapper = document.getElementById('app-wrapper');
+<main>
 
-      // Update text content
-      if (heroTitleEl) {
-        const title = config.hero_title || defaultConfig.hero_title;
-        heroTitleEl.textContent = title;
-      }
-      if (heroSubtitleEl) heroSubtitleEl.textContent = config.hero_subtitle || defaultConfig.hero_subtitle;
-      if (discoveryTitleEl) discoveryTitleEl.textContent = config.discovery_title || defaultConfig.discovery_title;
-      if (capabilitiesTitleEl) capabilitiesTitleEl.textContent = config.capabilities_title || defaultConfig.capabilities_title;
-      if (mineralsTitleEl) mineralsTitleEl.textContent = config.minerals_title || defaultConfig.minerals_title;
-      if (partnershipTitleEl) partnershipTitleEl.textContent = config.partnership_title || defaultConfig.partnership_title;
-      if (ctaButtonEl) ctaButtonEl.textContent = config.cta_button_text || defaultConfig.cta_button_text;
+  <!-- ── GLOBAL ALERT ── -->
+  <div class="global-alert" id="globalAlert">
+    <span class="alert-icon">&#9888;</span>
+    <span class="alert-msg" id="globalAlertMsg">ALERT — check dashboard</span>
+    <span class="alert-tag">CRITICAL</span>
+  </div>
 
-      // Update colors
-      const bgColor = config.background_color || defaultConfig.background_color;
-      const textColor = config.text_color || defaultConfig.text_color;
+  <!-- ── TOP METRICS ── -->
+  <div class="metrics-row">
+    <div class="metric">
+      <div class="metric-label">Depth</div>
+      <div class="metric-val" id="mDepth" style="color:var(--accent)">37m</div>
+      <div class="metric-sub" id="mPressure">4.63 BAR</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Battery</div>
+      <div class="metric-val" id="mBatt" style="color:var(--accent2)">78%</div>
+      <div class="metric-sub" id="mBattTime">~3h 12m left</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Water temp</div>
+      <div class="metric-val" id="mTemp" style="color:#5bc8ff">12.4°C</div>
+      <div class="metric-sub">ambient</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Signal</div>
+      <div class="metric-val" style="color:var(--accent2)">94%</div>
+      <div class="metric-sub">tether stable</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Overall health</div>
+      <div class="metric-val" id="mHealth" style="color:var(--warn)">86%</div>
+      <div class="metric-sub">degraded</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Mission time</div>
+      <div class="metric-val" id="mTime" style="color:var(--text)">2h 48m</div>
+      <div class="metric-sub">hull scan active</div>
+    </div>
+  </div>
 
-      if (appWrapper) {
-        appWrapper.style.background = `linear-gradient(180deg, ${bgColor} 0%, ${adjustColor(bgColor, 20)} 35%, ${adjustColor(bgColor, 40)} 70%, ${adjustColor(bgColor, 20)} 100%)`;
-        appWrapper.style.color = textColor;
-      }
+  <!-- ══ ROW 1: Depth | Battery | Temp ══ -->
+  <div class="section-divider">Core telemetry</div>
+  <div class="grid-3">
 
-      // Update font
-      const customFont = config.font_family || defaultConfig.font_family;
-      const baseFontStack = 'sans-serif';
-      document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+    <!-- DEPTH -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Depth gauge</span>
+        <span class="badge badge-info" id="depthBadge">Descending</span>
+      </div>
+      <div class="panel-body">
+        <div class="depth-wrap">
+          <div class="depth-ticks">
+            <span>0m</span><span>25m</span><span>50m</span><span>75m</span><span>100m</span>
+          </div>
+          <div class="depth-bar">
+            <div class="depth-fill" id="depthFill" style="height:37%"></div>
+          </div>
+          <div class="depth-info">
+            <div class="depth-val" id="depthVal">37</div>
+            <div class="depth-unit">METERS</div>
+            <div style="margin-top:14px;font-size:10px;color:var(--text2);font-family:var(--mono);">PRESSURE</div>
+            <div style="font-size:20px;font-family:var(--mono);color:var(--accent);margin-top:2px;" id="pressDisp">4.63 BAR</div>
+            <div style="margin-top:12px;font-size:9px;color:var(--text2);font-family:var(--mono);letter-spacing:1px;">VECTOR</div>
+            <div style="width:100%;height:4px;background:rgba(0,0,0,.4);border-radius:2px;margin-top:5px;overflow:hidden;">
+              <div class="scan-line-anim" style="height:100%;background:var(--accent);border-radius:2px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      // Update font sizes proportionally
-      const baseSize = config.font_size || defaultConfig.font_size;
-      if (heroTitleEl) heroTitleEl.style.fontSize = `${baseSize * 3.75}px`;
-      if (heroSubtitleEl) heroSubtitleEl.style.fontSize = `${baseSize * 1.125}px`;
-      if (discoveryTitleEl) discoveryTitleEl.style.fontSize = `${baseSize * 3.125}px`;
-      if (capabilitiesTitleEl) capabilitiesTitleEl.style.fontSize = `${baseSize * 3.125}px`;
-      if (mineralsTitleEl) mineralsTitleEl.style.fontSize = `${baseSize * 3.125}px`;
-      if (partnershipTitleEl) partnershipTitleEl.style.fontSize = `${baseSize * 3.125}px`;
-    }
+    <!-- BATTERY -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Power system</span>
+        <span class="badge badge-ok">Nominal</span>
+      </div>
+      <div class="panel-body">
+        <div style="text-align:center;margin-bottom:10px;">
+          <div class="batt-big" id="battPct">78%</div>
+          <div style="font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:3px;" id="battETA">~3h 12m remaining</div>
+        </div>
+        <div class="batt-bar-wrap">
+          <div class="batt-bar-fill" id="battFill" style="width:78%;background:linear-gradient(90deg,#00c853,#00f5a0)"></div>
+          <div class="batt-pct-label" style="color:#002010;">78%</div>
+        </div>
+        <div class="batt-stats">
+          <div class="batt-stat">
+            <div class="batt-stat-label">VOLTAGE</div>
+            <div class="batt-stat-val">24.6V</div>
+          </div>
+          <div class="batt-stat">
+            <div class="batt-stat-label">CURRENT</div>
+            <div class="batt-stat-val">3.2A</div>
+          </div>
+          <div class="batt-stat">
+            <div class="batt-stat-label">CHARGE CYCLES</div>
+            <div class="batt-stat-val">142</div>
+          </div>
+          <div class="batt-stat">
+            <div class="batt-stat-label">CAPACITY</div>
+            <div class="batt-stat-val">98.4Ah</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    function adjustColor(hex, amount) {
-      const num = parseInt(hex.replace('#', ''), 16);
-      const r = Math.min(255, Math.max(0, (num >> 16) + amount));
-      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
-      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
-      return '#' + (0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1);
-    }
+    <!-- TEMP -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Thermal sensors</span>
+        <span class="badge badge-warn">Hull warm</span>
+      </div>
+      <div class="panel-body">
+        <div class="temp-big" id="tempDisp">12.4°C</div>
+        <div class="temp-sub">ambient water temperature</div>
+        <div class="temp-stats">
+          <div class="temp-stat">
+            <div class="temp-stat-label">HULL TEMP</div>
+            <div class="temp-stat-val" id="hullTemp" style="color:var(--warn);">28.1°C</div>
+          </div>
+          <div class="temp-stat">
+            <div class="temp-stat-label">MOTOR CORE</div>
+            <div class="temp-stat-val" style="color:var(--danger);">54.0°C</div>
+          </div>
+          <div class="temp-stat">
+            <div class="temp-stat-label">VISIBILITY</div>
+            <div class="temp-stat-val" style="color:var(--text);">4.2 m</div>
+          </div>
+          <div class="temp-stat">
+            <div class="temp-stat-label">SALINITY</div>
+            <div class="temp-stat-val" style="color:var(--accent);">34.8 ppt</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    function mapToCapabilities(config) {
-      return {
-        recolorables: [
-          {
-            get: () => config.background_color || defaultConfig.background_color,
-            set: (value) => { config.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
-          },
-          {
-            get: () => config.surface_color || defaultConfig.surface_color,
-            set: (value) => { config.surface_color = value; window.elementSdk.setConfig({ surface_color: value }); }
-          },
-          {
-            get: () => config.text_color || defaultConfig.text_color,
-            set: (value) => { config.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
-          },
-          {
-            get: () => config.primary_action_color || defaultConfig.primary_action_color,
-            set: (value) => { config.primary_action_color = value; window.elementSdk.setConfig({ primary_action_color: value }); }
-          },
-          {
-            get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
-            set: (value) => { config.secondary_action_color = value; window.elementSdk.setConfig({ secondary_action_color: value }); }
-          }
-        ],
-        borderables: [],
-        fontEditable: {
-          get: () => config.font_family || defaultConfig.font_family,
-          set: (value) => { config.font_family = value; window.elementSdk.setConfig({ font_family: value }); }
-        },
-        fontSizeable: {
-          get: () => config.font_size || defaultConfig.font_size,
-          set: (value) => { config.font_size = value; window.elementSdk.setConfig({ font_size: value }); }
-        }
-      };
-    }
+  </div><!-- /grid-3 -->
 
-    function mapToEditPanelValues(config) {
-      return new Map([
-        ['hero_title', config.hero_title || defaultConfig.hero_title],
-        ['hero_subtitle', config.hero_subtitle || defaultConfig.hero_subtitle],
-        ['discovery_title', config.discovery_title || defaultConfig.discovery_title],
-        ['capabilities_title', config.capabilities_title || defaultConfig.capabilities_title],
-        ['minerals_title', config.minerals_title || defaultConfig.minerals_title],
-        ['partnership_title', config.partnership_title || defaultConfig.partnership_title],
-        ['cta_button_text', config.cta_button_text || defaultConfig.cta_button_text]
-      ]);
-    }
+  <!-- ══ ROW 2: Motors | Metal Detector ══ -->
+  <div class="section-divider">Propulsion &amp; detection</div>
+  <div class="grid-2-1">
 
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange,
-        mapToCapabilities,
-        mapToEditPanelValues
-      });
-    }
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c89e903526a7ec6',t:'MTc3MDIwNTQwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <!-- MOTOR HEALTH -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Motor health</span>
+        <span class="badge badge-warn" id="motorBadge">1 degraded</span>
+      </div>
+      <div class="panel-body">
+        <div class="motor-grid" id="motorGrid"></div>
+      </div>
+    </div>
+
+    <!-- METAL DETECTOR -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Metal detector</span>
+        <span class="badge badge-ok" id="metalBadge">Clear</span>
+      </div>
+      <div class="panel-body">
+        <div class="metal-wrap">
+          <div class="sonar-ring-container" id="sonarRing">
+            <div style="width:100px;height:100px;border-color:var(--border)"></div>
+            <div style="width:70px;height:70px;border-color:rgba(0,200,240,.2)"></div>
+            <div style="width:40px;height:40px;border-color:rgba(0,200,240,.15)"></div>
+            <div class="sonar-center"></div>
+            <div class="ping"></div>
+            <div class="ping ping2"></div>
+          </div>
+          <div class="metal-status" id="metalStatus" style="color:var(--accent2);">NO METAL DETECTED</div>
+          <div class="metal-dist" id="metalDist">Scanning radius: 5.0 m</div>
+          <div class="btn-row" style="justify-content:center">
+            <button class="btn" onclick="triggerMetal()">Simulate detection</button>
+            <button class="btn" onclick="clearMetal()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /grid-2-1 -->
+
+  <!-- ══ ROW 3: Thruster Health ══ -->
+  <div class="section-divider">Thruster health monitor</div>
+  <div style="margin-bottom:14px;">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Thruster diagnostics — all axes</span>
+        <span class="badge badge-warn" id="thrusterBadge">1 degraded</span>
+      </div>
+      <div class="panel-body">
+
+        <!-- Bot SVG diagram -->
+        <div class="bot-diag">
+          <svg width="280" height="150" viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg">
+            <rect x="90" y="50" width="100" height="50" rx="12" fill="rgba(13,32,64,.9)" stroke="#163050" stroke-width="1.5"/>
+            <text x="140" y="72" text-anchor="middle" font-size="10" fill="#5a80ab" font-family="'Share Tech Mono',monospace">AUV-009-X</text>
+            <text x="140" y="86" text-anchor="middle" font-size="8"  fill="#3a5a85" font-family="'Share Tech Mono',monospace">HULL SCAN</text>
+            <polygon points="190,70 205,75 190,80" fill="#163050"/>
+            <!-- T1 FWD PORT -->
+            <rect id="svgT1" x="58" y="32" width="42" height="18" rx="5" fill="#0a2d12"/>
+            <text x="79" y="45" text-anchor="middle" font-size="9" fill="#00f5a0" font-family="'Share Tech Mono',monospace" id="svgT1txt">T1  92%</text>
+            <line x1="88" y1="50" x2="100" y2="57" stroke="#163050" stroke-width="0.8" stroke-dasharray="3,2"/>
+            <text x="79" y="26" text-anchor="middle" font-size="8" fill="#3a5a85" font-family="'Share Tech Mono',monospace">FWD port</text>
+            <!-- T2 FWD STBD -->
+            <rect id="svgT2" x="180" y="32" width="42" height="18" rx="5" fill="#0a2d12"/>
+            <text x="201" y="45" text-anchor="middle" font-size="9" fill="#00f5a0" font-family="'Share Tech Mono',monospace" id="svgT2txt">T2  88%</text>
+            <line x1="192" y1="50" x2="180" y2="57" stroke="#163050" stroke-width="0.8" stroke-dasharray="3,2"/>
+            <text x="201" y="26" text-anchor="middle" font-size="8" fill="#3a5a85" font-family="'Share Tech Mono',monospace">FWD stbd</text>
+            <!-- T3 AFT PORT degraded -->
+            <rect id="svgT3" x="58" y="100" width="42" height="18" rx="5" fill="#2d1700"/>
+            <text x="79" y="113" text-anchor="middle" font-size="9" fill="#ffb300" font-family="'Share Tech Mono',monospace" id="svgT3txt">T3  76%</text>
+            <line x1="88" y1="100" x2="100" y2="93" stroke="#163050" stroke-width="0.8" stroke-dasharray="3,2"/>
+            <text x="79" y="132" text-anchor="middle" font-size="8" fill="#ffb300" font-family="'Share Tech Mono',monospace">AFT port !</text>
+            <!-- T4 AFT STBD -->
+            <rect id="svgT4" x="180" y="100" width="42" height="18" rx="5" fill="#0a2d12"/>
+            <text x="201" y="113" text-anchor="middle" font-size="9" fill="#00f5a0" font-family="'Share Tech Mono',monospace" id="svgT4txt">T4  95%</text>
+            <line x1="192" y1="100" x2="180" y2="93" stroke="#163050" stroke-width="0.8" stroke-dasharray="3,2"/>
+            <text x="201" y="132" text-anchor="middle" font-size="8" fill="#3a5a85" font-family="'Share Tech Mono',monospace">AFT stbd</text>
+          </svg>
+        </div>
+
+        <div class="thruster-grid-detail" id="thrusterGrid"></div>
+
+        <div class="btn-row">
+          <button class="btn btn-danger" onclick="simulateThrusterFail()">Simulate T3 critical failure</button>
+          <button class="btn" onclick="resetThrusters()">Reset to nominal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ROW 4: Sensors | Damage ══ -->
+  <div class="section-divider">Sensors &amp; damage</div>
+  <div class="grid-2">
+
+    <!-- SENSOR HEALTH -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Sensor health</span>
+        <span class="badge badge-warn">1 degraded</span>
+      </div>
+      <div class="panel-body">
+        <div class="sensor-list" id="sensorList"></div>
+      </div>
+    </div>
+
+    <!-- DAMAGE REPORT -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Damage &amp; event log</span>
+        <span class="badge badge-danger" id="dmgBadge">1 critical</span>
+      </div>
+      <div class="panel-body">
+        <div class="damage-list" id="damageList"></div>
+        <div class="btn-row">
+          <button class="btn" onclick="runDiagnostic()">Run diagnostic</button>
+          <button class="btn" onclick="addDamageEntry('ok','&#10003;','All systems polled — no new faults')">Poll systems</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ ROW 5: Bio Scanner ══ -->
+  <div class="section-divider">Bio-scanner — species detection</div>
+  <div style="margin-bottom:14px;">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Underwater bio-scanner</span>
+        <span class="badge badge-info" id="bioBadge">Scanning — active</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="bio-alert-banner" id="bioAlert">
+          <div style="flex-shrink:0;margin-top:2px;">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="14" fill="rgba(255,61,61,.2)"/>
+              <path d="M14 7a7 7 0 110 14A7 7 0 0114 7zm.875 10.5h-1.75V19h1.75v-1.5zm0-7h-1.75v5.25h1.75V10.5z" fill="#ff3d3d"/>
+            </svg>
+          </div>
+          <div>
+            <div class="bio-alert-title" id="bioAlertTitle">Unknown species detected</div>
+            <div class="bio-alert-desc" id="bioAlertDesc">Unclassified organism at 4.1 m, bearing 220°. Morphology does not match any of 12,440 database entries. Bio-sample logging initiated.</div>
+            <div class="bio-alert-meta" id="bioAlertMeta">
+              <span class="badge badge-danger">Unclassified</span>
+              <span class="badge badge-info">Size: ~60 cm</span>
+              <span class="badge badge-warn">Confidence: 94%</span>
+              <span class="badge badge-purple">Bearing: 220°</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;align-items:start;">
+          <div>
+            <div style="font-size:9px;letter-spacing:2px;color:var(--text2);font-family:var(--mono);text-transform:uppercase;margin-bottom:8px;">Sonar view</div>
+            <div class="scan-visual">
+              <div class="scan-ring-bio" style="width:110px;height:110px;"></div>
+              <div class="scan-ring-bio" style="width:76px;height:76px;"></div>
+              <div class="scan-ring-bio" style="width:44px;height:44px;"></div>
+              <div class="scan-center-dot"></div>
+              <div class="scan-sweep" id="bioSweep"></div>
+            </div>
+          </div>
+          <div class="scan-stat-list">
+            <div class="scan-row"><span class="scan-rlabel">Scan mode</span><span class="scan-rval" id="bioMode">Active — 360°</span></div>
+            <div class="scan-row"><span class="scan-rlabel">Scan radius</span><span class="scan-rval">8.0 m</span></div>
+            <div class="scan-row"><span class="scan-rlabel">Known nearby</span><span class="scan-rval" id="knownCount">3</span></div>
+            <div class="scan-row"><span class="scan-rlabel">Unknown detections</span><span class="scan-rval" id="unknownCount" style="color:var(--danger)">0</span></div>
+            <div class="scan-row"><span class="scan-rlabel">Sonar temp</span><span class="scan-rval">23.4°C</span></div>
+            <div class="scan-row"><span class="scan-rlabel">DB version</span><span class="scan-rval">v4.8.1 — 12,440 spp</span></div>
+          </div>
+        </div>
+
+        <div class="sightings-title">Recent sightings</div>
+        <div class="sightings-list" id="sightingsList"></div>
+
+        <div class="btn-row">
+          <button class="btn btn-danger" onclick="triggerUnknown()">Simulate unknown species</button>
+          <button class="btn" onclick="clearBio()">Clear bio alert</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="sbar-item"><span class="live-dot"></span><span style="color:var(--accent2)">LIVE</span></div>
+    <div class="sbar-item">BOT: AUV-009-X</div>
+    <div class="sbar-item">SIGNAL: 94%</div>
+    <div class="sbar-item">MISSION: HULL SCAN</div>
+    <div class="sbar-item">DIVE: 2h 48m</div>
+    <div class="sbar-item" style="color:var(--accent)" id="footerClock">--:--:--</div>
+    <div style="margin-left:auto;font-size:9px;color:var(--text2);">Report ID: RPT-20260418-009X</div>
+  </div>
+
+</main>
+
+<script>
+/* ────────────────────────────────────────
+   DATA
+──────────────────────────────────────── */
+const motors = [
+  {id:'M1',name:'FWD PORT', health:92, rpm:2840, status:'ok'},
+  {id:'M2',name:'FWD STBD', health:88, rpm:2790, status:'ok'},
+  {id:'M3',name:'AFT PORT', health:76, rpm:2600, status:'warn'},
+  {id:'M4',name:'VERTICAL', health:95, rpm:1200, status:'ok'},
+];
+
+const thrusters = [
+  {id:'T1',name:'FWD port',   health:92, rpm:2840, temp:38, vibration:0.8,  status:'ok'},
+  {id:'T2',name:'FWD stbd',   health:88, rpm:2790, temp:41, vibration:1.1,  status:'ok'},
+  {id:'T3',name:'AFT port',   health:76, rpm:2600, temp:54, vibration:3.2,  status:'warn'},
+  {id:'T4',name:'AFT stbd',   health:95, rpm:1200, temp:36, vibration:0.5,  status:'ok'},
+];
+
+const sensors = [
+  {name:'Depth sensor',    val:98, color:'#00f5a0'},
+  {name:'Sonar array',     val:91, color:'#00f5a0'},
+  {name:'Camera (FWD)',    val:85, color:'#00f5a0'},
+  {name:'Metal detector',  val:100,color:'#00f5a0'},
+  {name:'Pressure sensor', val:97, color:'#00f5a0'},
+  {name:'IMU / Gyro',      val:73, color:'#ffb300'},
+  {name:'Bio-scanner',     val:100,color:'#00f5a0'},
+  {name:'Leak detector',   val:100,color:'#00f5a0'},
+];
+
+const damages = [
+  {sev:'danger', icon:'!', text:'Metal object detected — 0.8 m, bearing 045°', time:'14:23:07'},
+  {sev:'warn',   icon:'▲', text:'Port thruster vibration above threshold',      time:'14:23:01'},
+  {sev:'info',   icon:'i', text:'Minor hull abrasion — aft section',            time:'13:55:42'},
+  {sev:'ok',     icon:'✓', text:'Ballast seal integrity verified',              time:'12:30:00'},
+];
+
+const sightings = [
+  {icon:'🐟', name:'Atlantic cod (Gadus morhua)',           time:'14:18:02', status:'known'},
+  {icon:'🦑', name:'Common squid (Loligo vulgaris)',        time:'13:52:44', status:'known'},
+  {icon:'🐠', name:'Blue-striped grunt (Haemulon sciurus)', time:'12:41:10', status:'known'},
+];
+
+/* ────────────────────────────────────────
+   HELPERS
+──────────────────────────────────────── */
+function colorByHealth(h){
+  if(h>=85) return '#00f5a0';
+  if(h>=70) return '#ffb300';
+  return '#ff3d3d';
+}
+
+function severityColor(sev){
+  return sev==='danger'?'#ff3d3d':sev==='warn'?'#ffb300':sev==='info'?'#00c8f0':'#00f5a0';
+}
+
+function now(){ return new Date().toLocaleTimeString(); }
+
+/* ────────────────────────────────────────
+   MOTOR HEALTH
+──────────────────────────────────────── */
+function buildMotors(){
+  const g = document.getElementById('motorGrid');
+  g.innerHTML = '';
+  motors.forEach(m => {
+    const r = m.health / 100;
+    const circ = 2 * Math.PI * 22;
+    const dash = `${(r * circ).toFixed(1)} ${circ.toFixed(1)}`;
+    const col = colorByHealth(m.health);
+    g.innerHTML += `<div class="motor-card">
+      <div class="motor-name">${m.id} — ${m.name}</div>
+      <div class="motor-ring">
+        <svg width="58" height="58" viewBox="0 0 58 58">
+          <circle cx="29" cy="29" r="22" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="5"/>
+          <circle cx="29" cy="29" r="22" fill="none" stroke="${col}" stroke-width="5"
+            stroke-dasharray="${dash}" stroke-linecap="round"/>
+        </svg>
+        <div class="motor-ring-val" style="color:${col}">${m.health}%</div>
+      </div>
+      <div class="motor-rpm">${m.rpm} rpm</div>
+    </div>`;
+  });
+  const deg = motors.filter(m=>m.status!=='ok').length;
+  const el = document.getElementById('motorBadge');
+  el.textContent = deg===0 ? 'All nominal' : `${deg} degraded`;
+  el.className = 'badge ' + (deg===0?'badge-ok':'badge-warn');
+}
+
+/* ────────────────────────────────────────
+   THRUSTER DETAIL
+──────────────────────────────────────── */
+function buildThrusters(){
+  const g = document.getElementById('thrusterGrid');
+  g.innerHTML = '';
+  thrusters.forEach((t,i) => {
+    const col = colorByHealth(t.health);
+    const vcol = t.vibration>2?'color:var(--danger)':t.vibration>1?'color:var(--warn)':'color:var(--accent2)';
+    const tcol = t.temp>50?'color:var(--danger)':t.temp>45?'color:var(--warn)':'color:var(--accent)';
+    const stLbl = t.status==='ok'?'Nominal':t.status==='warn'?'Degraded':'Critical';
+    const stCls = t.status==='ok'?'badge-ok':t.status==='warn'?'badge-warn':'badge-danger';
+    g.innerHTML += `<div class="th-card">
+      <div class="th-header">
+        <span class="th-name">${t.id} — ${t.name}</span>
+        <span class="badge ${stCls}">${stLbl}</span>
+      </div>
+      <div class="th-bar-wrap">
+        <div class="th-bar-fill" style="width:${t.health}%;background:${col}"></div>
+      </div>
+      <div class="th-stats">
+        <span>Health <span class="th-sv" style="color:${col}">${t.health}%</span></span>
+        <span>RPM <span class="th-sv">${t.rpm}</span></span>
+        <span>Temp <span class="th-sv" style="${tcol}">${t.temp}°C</span></span>
+        <span>Vib <span class="th-sv" style="${vcol}">${t.vibration.toFixed(1)}</span></span>
+      </div>
+    </div>`;
+  });
+  const deg = thrusters.filter(t=>t.status!=='ok').length;
+  const el = document.getElementById('thrusterBadge');
+  el.textContent = deg===0?'All nominal':`${deg} degraded`;
+  el.className = 'badge '+(deg===0?'badge-ok':deg>=2?'badge-danger':'badge-warn');
+}
+
+function simulateThrusterFail(){
+  thrusters[2] = {...thrusters[2], health:41, rpm:980, temp:72, vibration:5.8, status:'critical'};
+  buildThrusters();
+  // update SVG
+  document.getElementById('svgT3').setAttribute('fill','#3d0000');
+  document.getElementById('svgT3txt').setAttribute('fill','#ff3d3d');
+  document.getElementById('svgT3txt').textContent='T3  41%';
+  showGlobalAlert('T3 AFT PORT THRUSTER CRITICAL — vibration 5.8 G, temp 72°C. Immediate surface return advised.');
+  addDamageEntry('danger','!','T3 AFT port thruster critical failure — vibration 5.8 G, temp 72°C');
+}
+
+function resetThrusters(){
+  thrusters[0]={id:'T1',name:'FWD port', health:92,rpm:2840,temp:38,vibration:0.8, status:'ok'};
+  thrusters[1]={id:'T2',name:'FWD stbd', health:88,rpm:2790,temp:41,vibration:1.1, status:'ok'};
+  thrusters[2]={id:'T3',name:'AFT port', health:76,rpm:2600,temp:54,vibration:3.2, status:'warn'};
+  thrusters[3]={id:'T4',name:'AFT stbd', health:95,rpm:1200,temp:36,vibration:0.5, status:'ok'};
+  buildThrusters();
+  document.getElementById('svgT3').setAttribute('fill','#2d1700');
+  document.getElementById('svgT3txt').setAttribute('fill','#ffb300');
+  document.getElementById('svgT3txt').textContent='T3  76%';
+}
+
+/* ────────────────────────────────────────
+   SENSORS
+──────────────────────────────────────── */
+function buildSensors(){
+  const el = document.getElementById('sensorList');
+  el.innerHTML = '';
+  sensors.forEach(s => {
+    el.innerHTML += `<div class="sensor-row">
+      <div class="sdot" style="background:${s.color};box-shadow:0 0 6px ${s.color}55"></div>
+      <div class="sname">${s.name}</div>
+      <div class="sbar-wrap"><div class="sbar-fill" style="width:${s.val}%;background:${s.color}"></div></div>
+      <div class="sval">${s.val}%</div>
+    </div>`;
+  });
+}
+
+/* ────────────────────────────────────────
+   DAMAGE LOG
+──────────────────────────────────────── */
+function buildDamages(){
+  const el = document.getElementById('damageList');
+  el.innerHTML = '';
+  damages.forEach(d => {
+    const c = severityColor(d.sev);
+    el.innerHTML += `<div class="dmg-row" style="border-color:${c}">
+      <span class="dmg-icon" style="color:${c}">${d.icon}</span>
+      <span class="dmg-text">${d.text}</span>
+      <span class="dmg-time">${d.time}</span>
+    </div>`;
+  });
+  const crits = damages.filter(d=>d.sev==='danger').length;
+  const el2 = document.getElementById('dmgBadge');
+  el2.textContent = crits>0 ? `${crits} critical` : `${damages.filter(d=>d.sev==='warn').length} warnings`;
+  el2.className = 'badge '+(crits>0?'badge-danger':'badge-warn');
+}
+
+function addDamageEntry(sev, icon, text){
+  damages.unshift({sev, icon, text, time: now()});
+  buildDamages();
+}
+
+let diagToggle = false;
+function runDiagnostic(){
+  diagToggle = !diagToggle;
+  if(diagToggle){
+    addDamageEntry('warn','▲','Diagnostic: IMU drift detected — recalibration needed');
+  } else {
+    addDamageEntry('ok','✓','Diagnostic complete — hull integrity confirmed');
+  }
+}
+
+/* ────────────────────────────────────────
+   METAL DETECTOR
+──────────────────────────────────────── */
+let metalActive = false;
+function triggerMetal(){
+  if(metalActive) return;
+  metalActive = true;
+  document.getElementById('metalStatus').textContent = '⚠ METAL DETECTED';
+  document.getElementById('metalStatus').style.color = 'var(--danger)';
+  document.getElementById('metalDist').textContent = 'Distance: 0.8 m — Bearing: 045°';
+  document.getElementById('metalBadge').textContent = 'Metal detected!';
+  document.getElementById('metalBadge').className = 'badge badge-danger';
+  document.querySelectorAll('.ping').forEach(p=>{ p.style.borderColor='var(--danger)'; });
+  document.querySelector('.sonar-center').style.background = 'var(--danger)';
+  showGlobalAlert('METAL OBJECT DETECTED — Distance: 0.8 m, Bearing: 045°. Halt forward motion!');
+  addDamageEntry('danger','!','Metal object detected at 0.8 m, bearing 045°');
+}
+function clearMetal(){
+  metalActive = false;
+  document.getElementById('metalStatus').textContent = 'NO METAL DETECTED';
+  document.getElementById('metalStatus').style.color = 'var(--accent2)';
+  document.getElementById('metalDist').textContent = 'Scanning radius: 5.0 m';
+  document.getElementById('metalBadge').textContent = 'Clear';
+  document.getElementById('metalBadge').className = 'badge badge-ok';
+  document.querySelectorAll('.ping').forEach(p=>{ p.style.borderColor='var(--accent)'; });
+  document.querySelector('.sonar-center').style.background = 'var(--accent)';
+  clearGlobalAlert();
+}
+
+/* ────────────────────────────────────────
+   BIO SCANNER
+──────────────────────────────────────── */
+function buildSightings(){
+  const el = document.getElementById('sightingsList');
+  el.innerHTML = '';
+  sightings.forEach(s => {
+    el.innerHTML += `<div class="sighting ${s.status==='unknown'?'unknown':''}">
+      <span class="sighting-icon">${s.icon}</span>
+      <span class="sighting-name">${s.name}</span>
+      ${s.status==='unknown'?'<span class="badge badge-danger">Unknown</span>':''}
+      <span class="sighting-time">${s.time}</span>
+    </div>`;
+  });
+}
+
+let bioActive = false;
+function triggerUnknown(){
+  if(bioActive) return;
+  bioActive = true;
+  document.getElementById('bioAlert').classList.add('show');
+  document.getElementById('bioBadge').textContent = 'Unknown species detected!';
+  document.getElementById('bioBadge').className = 'badge badge-danger';
+  document.getElementById('bioMode').textContent = 'Locked — tracking target';
+  document.getElementById('unknownCount').textContent = '1';
+  document.getElementById('bioSweep').style.background = 'var(--danger)';
+
+  // Add blip
+  const blip = document.createElement('div');
+  blip.id = 'bioBlip';
+  blip.className = 'scan-blip';
+  blip.style.cssText = 'top:72%;left:28%;background:var(--danger)';
+  document.querySelector('.scan-visual').appendChild(blip);
+
+  if(!sightings.find(s=>s.status==='unknown')){
+    sightings.unshift({icon:'?', name:'Unclassified organism — morphology unknown', time:now(), status:'unknown'});
+  }
+  buildSightings();
+  showGlobalAlert('UNKNOWN SPECIES DETECTED — 4.1 m, bearing 220°. Bio-logging active. Do not disturb habitat.');
+  addDamageEntry('warn','?','Unknown species sighted — 4.1 m, bearing 220°, ~60 cm');
+}
+
+function clearBio(){
+  bioActive = false;
+  document.getElementById('bioAlert').classList.remove('show');
+  document.getElementById('bioBadge').textContent = 'Scanning — active';
+  document.getElementById('bioBadge').className = 'badge badge-info';
+  document.getElementById('bioMode').textContent = 'Active — 360°';
+  document.getElementById('unknownCount').textContent = '0';
+  document.getElementById('bioSweep').style.background = 'var(--accent2)';
+  const blip = document.getElementById('bioBlip');
+  if(blip) blip.remove();
+  const idx = sightings.findIndex(s=>s.status==='unknown');
+  if(idx>-1) sightings.splice(idx,1);
+  buildSightings();
+  if(!metalActive) clearGlobalAlert();
+}
+
+/* ────────────────────────────────────────
+   GLOBAL ALERT
+──────────────────────────────────────── */
+function showGlobalAlert(msg){
+  document.getElementById('globalAlertMsg').textContent = msg;
+  document.getElementById('globalAlert').classList.add('show');
+}
+function clearGlobalAlert(){
+  document.getElementById('globalAlert').classList.remove('show');
+}
+
+/* ────────────────────────────────────────
+   LIVE SIMULATION — depth, temp
+──────────────────────────────────────── */
+let depth = 37, depthDir = 1;
+function tickLive(){
+  depth += depthDir * (Math.random() * 0.6);
+  if(depth > 88) depthDir = -1;
+  if(depth < 12) depthDir = 1;
+  depth = Math.min(100, Math.max(0, depth));
+
+  const pct = depth.toFixed(0);
+  document.getElementById('depthFill').style.height = pct + '%';
+  document.getElementById('depthVal').textContent = pct;
+  document.getElementById('mDepth').textContent = pct + 'm';
+
+  const press = (1 + depth * 0.0981).toFixed(2);
+  document.getElementById('pressDisp').textContent = press + ' BAR';
+  document.getElementById('mPressure').textContent = press + ' BAR';
+
+  const temp = (12.4 + depth * 0.018 + (Math.random()-.5)*.4).toFixed(1);
+  document.getElementById('tempDisp').textContent = temp + '°C';
+  document.getElementById('mTemp').textContent = temp + '°C';
+
+  const hull = (28 + depth * 0.05 + (Math.random()*.6)).toFixed(1);
+  document.getElementById('hullTemp').textContent = hull + '°C';
+}
+
+/* ────────────────────────────────────────
+   CLOCK
+──────────────────────────────────────── */
+function updateClock(){
+  const t = new Date().toLocaleTimeString();
+  document.getElementById('clock').textContent = t;
+  document.getElementById('footerClock').textContent = t;
+}
+
+/* ────────────────────────────────────────
+   INIT
+──────────────────────────────────────── */
+buildMotors();
+buildThrusters();
+buildSensors();
+buildDamages();
+buildSightings();
+updateClock();
+
+setInterval(updateClock, 1000);
+setInterval(tickLive, 2000);
+</script>
+</body>
 </html>
